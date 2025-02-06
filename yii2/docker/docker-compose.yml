@@ -1,0 +1,33 @@
+version: '3.5'
+name: jonsdocs
+
+services:
+  apache:
+    extra_hosts:
+      host.docker.internal: host-gateway
+    container_name: apache-php
+    build:
+      dockerfile: apache-dockerfile
+      context: .
+    ports:
+      - 8080:80
+    volumes:
+      - '../:/var/www/html'
+      - './apache-conf:/etc/apache2/sites-enabled'
+    depends_on:
+      - mariadb
+
+  mariadb:
+    container_name: db
+    build:
+      context: .
+      dockerfile: db-dockerfile
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: YOURPASSWORDHERE
+    volumes:
+      - './mysqldata:/var/lib/mysql'
+
+volumes:
+  mysqldata:

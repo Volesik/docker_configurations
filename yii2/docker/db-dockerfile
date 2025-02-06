@@ -1,0 +1,5 @@
+FROM mariadb:10.3.35
+
+# Install nano, mc, and htop
+RUN apt-get update && apt-get install -y nano mc htop && \
+    rm -rf /var/lib/apt/lists/*  # Clean up the apt cache to reduce image size

@@ -1,0 +1,25 @@
+FROM php:7.4-apache
+
+# Install required system dependencies
+RUN apt-get update && \
+    apt-get install -y zip curl libcurl3-dev libzip-dev libpng-dev libonig-dev libxml2-dev libmagickwand-dev nano mc htop && \
+    rm -rf /var/lib/apt/lists/*  # Clean up apt cache
+
+# Install PHP extensions
+RUN docker-php-ext-install curl gd mbstring mysqli pdo pdo_mysql xml zip
+
+# Install ImageMagick
+RUN pecl install imagick && docker-php-ext-enable imagick && \
+    apt-get purge -y libmagickwand-dev
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install Xdebug
+RUN pecl install xdebug-3.0.1 && docker-php-ext-enable xdebug
+
+# Copy custom Xdebug configuration
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
